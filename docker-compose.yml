@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mnist-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mnist-digit-recognition
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DEBUG=False
+      - MODEL_PATH=/app/models/digit_recognition.h5
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  default:
+    name: mnist-network
